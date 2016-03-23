@@ -180,10 +180,12 @@ static void __sched_execute(struct sched_t *sched, struct task_t *task) {
 	/* get current time */
 	long unow = __sched_get_mtime();
 
+	printf("Executing task \n");
+
 	/* execute task */
 	if(task->task)
 		(*task->task)(task->task_arg);
-
+	
 	/* make a copy of the task data */
 	struct task_t new_task = *task;
 
@@ -222,6 +224,7 @@ void sched_tick(struct sched_t *sched) {
 	for(i = 0; i < SCHED_BUFFER_SIZE; i++) {
 		struct task_t *task = &sched->_tasks[i];
 
+		
 		/* check if the task has been scheduled to run now or in the past */
 		if(__TASK_IS_REGULAR(*task)) {
 			/* check if the task has been scheduled to execute in the idle window */
@@ -229,9 +232,12 @@ void sched_tick(struct sched_t *sched) {
 				idle = false;
 			}
 
+
 			/* task has been scheduled to execute */
-			if(task->_next_mtime <= unow)
+			if(task->_next_mtime <= unow){
 				__sched_execute(sched, task);
+				printf("Check task and run \n");
+			}
 		}
 	}
 
@@ -239,7 +245,7 @@ void sched_tick(struct sched_t *sched) {
 	if(idle) {
 		for(i = 0; i < SCHED_BUFFER_SIZE; i++) {
 			struct task_t *task = &sched->_tasks[i];
-
+			
 			/* execute idle tasks */
 			if(__TASK_IS_IDLE(*task))
 				__sched_execute(sched, task);
