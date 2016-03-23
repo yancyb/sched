@@ -145,7 +145,7 @@ static void __async_tone_off(struct tone_t *tone) {
 	}
 }
 
-void async_tone(struct sched_t *sched, struct tone_t *tone) {
+void async_tonen(struct sched_t *sched, struct tone_t *tone) {
 	/* adjust start and end by time */
 	long now = __async_time();
 	tone->start += now;
@@ -157,9 +157,43 @@ void async_tone(struct sched_t *sched, struct tone_t *tone) {
 	/* set up task struct */
 	struct task_t task;
 	task_clear(&task);
-	task.task = (task_fp) __async_tone_on;
+	
+	task.task     = (task_fp) __async_tone_on;
 	task.task_arg = tone;
-	task.mtime = tone->start;
-	task.flag = ONCE;
+	task.mtime    = tone->start;
+	task.flag     = PERIODIC;
 	sched_register(sched, task);
 }
+
+void printme1( int *mm )
+{
+	printf("My Task 0\n");
+}
+
+void printme2( int *mm )
+{
+	printf("My Task 1\n");
+}
+
+void async_tone(struct sched_t *sched, struct tone_t *tone) 
+{
+	struct task_t task1;
+	struct task_t task2;
+
+	task_clear(&task1);
+
+	task1.task     = (task_fp) printme1;
+	task1.task_arg = 1;
+	task1.mtime    = 300;
+	task1.flag     = PERIODIC;
+	sched_register(sched, task1);
+
+
+	task_clear(&task2);
+
+	task2.task     = (task_fp) printme2;
+	task2.task_arg = 1;
+	task2.mtime    = 900;
+	task2.flag     = PERIODIC;
+	sched_register(sched, task2);
+} 

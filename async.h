@@ -37,6 +37,10 @@ struct tone_t {
 	long end;
 };
 
+
+void printme1( int *mm );
+void printme2( int *mm );
+
 void tone_clear(struct tone_t *);
 void async_tone(struct sched_t *, struct tone_t *);
 
